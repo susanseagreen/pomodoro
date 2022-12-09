@@ -7,12 +7,9 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_TIMER = 3
-SHORT_BREAK_TIMER = 2
-LONG_BREAK_TIMER = 1
-# WORK_TIMER = 25 * 60
-# SHORT_BREAK_TIMER = 5 * 60
-# LONG_BREAK_TIMER = 20 * 60
+WORK_TIMER = 25 * 60
+SHORT_BREAK_TIMER = 5 * 60
+LONG_BREAK_TIMER = 20 * 60
 reps = 0
 timer = ""
 
@@ -22,7 +19,7 @@ timer = ""
 def reset_timer():
     window.after_cancel(timer)
     canvas.itemconfig(timer_text, text="00:00")
-    title_label.config(text="Timer", fg=GREEN)
+    title_label.config(text="TIMER", fg=GREEN)
     check_marks.config(text="")
     global reps
     reps = 0
@@ -30,16 +27,24 @@ def reset_timer():
 # ---------------------------- TIMER MECHANISM ------------------------------- #
 
 
+def pop():
+    window.attributes('-topmost', 1)
+    window.attributes('-topmost', 0)
+
+
 def start_timer():
     global reps
     reps += 1
     if reps <= 8:
+        window.lift()
+        window.attributes('-topmost', True)
+        window.after_idle(window.attributes, '-topmost', False)
         if reps % 8 == 0:
             count_down(LONG_BREAK_TIMER)
-            title_label.config(text="Break", fg=RED)
+            title_label.config(text="BREAK", fg=RED)
         elif reps % 2 == 0:
             count_down(SHORT_BREAK_TIMER)
-            title_label.config(text="Break", fg=PINK)
+            title_label.config(text="BREAK", fg=PINK)
         else:
             count_down(WORK_TIMER)
             title_label.config(text="WORK", fg=GREEN)
@@ -73,7 +78,7 @@ window = Tk()
 window.title("Pomodoro")
 window.config(padx=100, pady=50, bg=YELLOW)
 
-title_label = Label(text="Timer", fg=GREEN, bg=YELLOW, font=(FONT_NAME, 50, "bold"))
+title_label = Label(text="TIMER", fg=GREEN, bg=YELLOW, font=(FONT_NAME, 50, "bold"))
 title_label.grid(column=1, row=0)
 
 canvas = Canvas(width=200, height=224, bg=YELLOW, highlightthickness=0)
