@@ -7,6 +7,9 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
+# WORK_TIMER = 5
+# SHORT_BREAK_TIMER = 5
+# LONG_BREAK_TIMER = 5
 WORK_TIMER = 25 * 60
 SHORT_BREAK_TIMER = 5 * 60
 LONG_BREAK_TIMER = 20 * 60
@@ -17,6 +20,7 @@ timer = ""
 
 
 def reset_timer():
+    show_start_hide_reset()
     window.after_cancel(timer)
     canvas.itemconfig(timer_text, text="00:00")
     title_label.config(text="TIMER", fg=GREEN)
@@ -27,18 +31,27 @@ def reset_timer():
 # ---------------------------- TIMER MECHANISM ------------------------------- #
 
 
-def pop():
-    window.attributes('-topmost', 1)
-    window.attributes('-topmost', 0)
+def show_reset_hide_start():
+    start_btn.grid_forget()
+    reset_btn.config(text="Reset", highlightthickness=0, highlightbackground=YELLOW, command=reset_timer)
+    reset_btn.grid(column=1, row=2)
+
+
+def show_start_hide_reset():
+    reset_btn.grid_forget()
+    start_btn.config(text="Start", highlightthickness=0, highlightbackground=YELLOW, command=start_timer)
+    start_btn.grid(column=1, row=2)
 
 
 def start_timer():
     global reps
+    if reps == 0:
+        show_reset_hide_start()
     reps += 1
+    window.lift()
+    window.attributes('-topmost', True)
+    window.after_idle(window.attributes, '-topmost', False)
     if reps <= 8:
-        window.lift()
-        window.attributes('-topmost', True)
-        window.after_idle(window.attributes, '-topmost', False)
         if reps % 8 == 0:
             count_down(LONG_BREAK_TIMER)
             title_label.config(text="BREAK", fg=RED)
@@ -76,25 +89,25 @@ def count_down(count):
 
 window = Tk()
 window.title("Pomodoro")
-window.config(padx=100, pady=50, bg=YELLOW)
+window.config(padx=50, pady=10, bg=YELLOW)
 
 title_label = Label(text="TIMER", fg=GREEN, bg=YELLOW, font=(FONT_NAME, 50, "bold"))
 title_label.grid(column=1, row=0)
 
-canvas = Canvas(width=200, height=224, bg=YELLOW, highlightthickness=0)
+canvas = Canvas(width=240, height=260, bg=YELLOW, highlightthickness=0)
 tomato_img = PhotoImage(file="tomato.png")
-canvas.create_image(100, 112, image=tomato_img)
-timer_text = canvas.create_text(103, 130, text="00:00", fill="white", font=(FONT_NAME, 35, "bold"))
+canvas.create_image(120, 120, image=tomato_img)
+timer_text = canvas.create_text(113, 140, text="00:00", fill="white", font=(FONT_NAME, 35, "bold"))
 canvas.grid(column=1, row=1)
 
 start_btn = Button(text="Start", highlightthickness=0, highlightbackground=YELLOW, command=start_timer)
-start_btn.grid(column=0, row=2)
+start_btn.grid(column=1, row=2)
 
-reset_btn = Button(text="Reset", highlightthickness=0, highlightbackground=YELLOW, command=reset_timer)
-reset_btn.grid(column=2, row=2)
+reset_btn = Button(text="")
+reset_btn.grid_forget()
 
-check_marks = Label(text="", fg=GREEN, bg=YELLOW)
+check_marks = Label(text="", fg=GREEN, bg=YELLOW, font=(FONT_NAME, 30, "bold"))
 
-check_marks.grid(column=1, row=3)
+check_marks.grid(column=1, row=3,)
 
 window.mainloop()
